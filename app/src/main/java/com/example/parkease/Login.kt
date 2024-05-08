@@ -1,9 +1,15 @@
 package com.example.parkease
 
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Build
+import android.util.Log
 
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,10 +33,15 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,10 +54,20 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.auth
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -61,12 +82,14 @@ fun LoginPage(navController: NavController) {
         LoginElements(auth = auth, context = context, navController = navController)
 
     } else {
-        navController.navigate("Greeting")
+        navController.navigate("Home")
         auth.signOut()
 
 
 
+
     }
+
 }
 @Composable
 fun LoginElements(auth: FirebaseAuth, context: android.content.Context,navController: NavController) {
@@ -135,42 +158,43 @@ fun LoginElements(auth: FirebaseAuth, context: android.content.Context,navContro
             )
             Row(horizontalArrangement = Arrangement.SpaceEvenly) {
                 Button(
-                    onClick = { signInWithEmailAndPassword(auth, context, username, password) },
+                    onClick = { signInWithEmailAndPassword(auth, context, username, password, navController = navController) },
                     colors = ButtonDefaults.buttonColors(Color.Yellow),
                     modifier = Modifier.padding(8.dp)
                 ) {
                     Text("Login", color = Color.Black)
                 }
-                Button(
-                    onClick = {},
-                    colors = ButtonDefaults.buttonColors(Color.Gray),
-                    modifier = Modifier.padding(8.dp)
-                ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_google_logo),
-                                contentDescription = null,
-                                modifier = Modifier.padding(horizontal = 4.dp)
-                            )
-                            Text(text = " Google Sign-in", color = Color.White)
-                        }
 
-
-                    }
 
                 Button(
-                    onClick = { navController.navigate("Registration") },
-                    shape = RoundedCornerShape(30),
-                    colors = ButtonDefaults.buttonColors(Color.Yellow),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 30.dp)
-                ) {
-                    Text(text = "Register", color = Color.Black)
-
+                    onClick = { }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_google_logo),
+                        contentDescription = null,
+                        modifier = Modifier.padding(horizontal = 4.dp)
+                    )
+                    Text(text = " Google Sign-in", color = Color.White)
                 }
+
+
+            }
+
+
+            Button(
+                onClick = { navController.navigate("Registration") },
+                shape = RoundedCornerShape(30),
+                colors = ButtonDefaults.buttonColors(Color.Yellow),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 30.dp)
+            ) {
+                Text(text = "Register", color = Color.Black)
+
             }
         }
     }
+}
+
 
 
 
@@ -180,7 +204,8 @@ private fun signInWithEmailAndPassword(
     auth: FirebaseAuth,
     context: android.content.Context,
     email: String,
-    password: String
+    password: String,
+    navController: NavController
 ) {
     auth.signInWithEmailAndPassword(email, password)
         .addOnCompleteListener { task ->
@@ -188,6 +213,8 @@ private fun signInWithEmailAndPassword(
                 // Authentication success, navigate to home screen
                 // Implement navigation logic here, for now, just display a toast
                 Toast.makeText(context, "Authentication successful", Toast.LENGTH_SHORT).show()
+                navController.navigate("Home")
+
             } else {
                 // Authentication failed, display error message
                 // Implement error handling UI, for now, just display a toast
@@ -198,16 +225,6 @@ private fun signInWithEmailAndPassword(
 
 
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AppBar() {
-    CenterAlignedTopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            titleContentColor = MaterialTheme.colorScheme.primary,
-        ),
-        title = { Text("ParkEase", fontSize = 30.sp) }
-    )
-}
+
 
 

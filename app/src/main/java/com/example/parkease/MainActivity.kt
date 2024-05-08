@@ -16,6 +16,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.findNavController
 import com.example.parkease.ui.theme.ParkEaseTheme
 import com.google.firebase.FirebaseApp
 
@@ -59,6 +60,12 @@ fun MyApp() {
         }
         composable("Greeting") {
             Greeting(navController = navController)
+        }
+        composable("Home") {
+            Home(navController)
+        }
+        composable("BottomNavigationBar"){
+            BottomNavigationBar()
         }
 
     }
