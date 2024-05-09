@@ -406,6 +406,6 @@ fun ParkingPlaceItem(parkingPlace: ParkingPlace) {
         }
     }
 }
-
-
+//the below code will get the current userID to the variable
+//val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 

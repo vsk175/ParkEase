@@ -1,8 +1,19 @@
 package com.example.parkease
 
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import android.os.Build
+import android.os.Bundle
 import android.service.autofill.OnClickAction
+import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.compose.setContent
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -50,6 +61,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -63,15 +75,36 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.parkease.ui.theme.ParkEaseTheme
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.auth.User
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-
+class Register : AppCompatActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            Registration()
+        }
+    }
+}
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Registration(navController: NavController){
+fun Registration(){
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        // Handle the result here
+        if (result.resultCode == Activity.RESULT_OK) {
+            // Handle success
+        } else {
+            // Handle failure or other cases
+        }
+    }
     var firstname by remember { mutableStateOf("")}
     var lastname by remember { mutableStateOf("")}
     var useremail by remember { mutableStateOf("")}
@@ -83,6 +116,9 @@ fun Registration(navController: NavController){
     var password by remember { mutableStateOf("") }
     var isExpanded by remember { mutableStateOf(false)}
     var selectedState by remember { mutableStateOf(states[0]) }
+    val context = LocalContext.current
+    val firebaseAuth = FirebaseAuth.getInstance()
+    val db = FirebaseFirestore.getInstance()
 
     var showPassword by remember { mutableStateOf(false) }
 
@@ -152,7 +188,7 @@ Column {
             singleLine = true
             )
         OutlinedTextField(
-            value = password, onValueChange = { if (it.matches(passwordRegex)) password = it },
+            value = password, onValueChange = {  password = it },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp),
@@ -244,7 +280,8 @@ Column {
         Row {
 
 
-            Button(onClick = {navController.navigate("LoginPage")},colors = ButtonDefaults.buttonColors(Color.Yellow),
+            Button(onClick = {navigateToLogin(context, launcher)}
+                ,colors = ButtonDefaults.buttonColors(Color.Yellow),
                 modifier = Modifier
                     .padding(horizontal = 8.dp, vertical = 8.dp))
             {
@@ -252,7 +289,8 @@ Column {
 
             }
             Button(
-                onClick = {}, colors = ButtonDefaults.buttonColors(Color.Yellow),
+                onClick = {registerUser(useremail, password, firebaseAuth, context)
+                    saveUserInfo(firstname,lastname,useremail,phoneNumber,useraddress,db)}, colors = ButtonDefaults.buttonColors(Color.Yellow),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp, vertical = 8.dp)
@@ -266,8 +304,39 @@ Column {
 }
 }
 
+private fun navigateToLogin(context: android.content.Context, launcher: ActivityResultLauncher<Intent>)
+{
+    val intent = Intent(context, Login::class.java)
+    launcher.launch(intent)
+}
 
 
+private fun saveUserInfo(firstname:String, lastname:String,email:String,phonenumber:String,address:String, db: FirebaseFirestore) {
+    val user = RegInfo(firstname, lastname, email, phonenumber, address)
+    db.collection("users")
+        .add(user)
+        .addOnSuccessListener { documentReference ->
+            Log.d("Firestore", "DocumentSnapshot added with ID: ${documentReference.id}")
+        }
+        .addOnFailureListener { e ->
+            Log.w("Firestore", "Error adding document", e)
+        }
+}
+
+fun registerUser(email: String, password: String, auth: FirebaseAuth, context: Context) {
+    if (email.isNotEmpty() && password.isNotEmpty()) {
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Toast.makeText(context, "Registration successful!: ", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, "Registration failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+    } else {
+        Toast.makeText(context, "Email and password cannot be empty", Toast.LENGTH_SHORT).show()
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -311,7 +380,7 @@ fun registrationpreview(){
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            Registration(navController = rememberNavController())
+            Registration()
         }
     }
 }

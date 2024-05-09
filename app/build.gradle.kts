@@ -69,6 +69,7 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth-ktx:23.0.0")
     implementation("com.google.android.gms:play-services-auth:21.1.1")
+    implementation("com.google.firebase:firebase-firestore-ktx:24.0.1")
     // Google Maps
     implementation("com.google.maps.android:maps-compose:4.3.3")
 
@@ -104,6 +105,7 @@ dependencies {
     implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
     implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
+    implementation("com.google.firebase:firebase-firestore-ktx:25.0.0")
     ksp("androidx.room:room-compiler:2.6.1")
     implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
     implementation("androidx.compose.runtime:runtime-livedata:1.6.7")

@@ -61,7 +61,7 @@ fun BottomNavigationBar() {
     ) { paddingValues ->
         NavHost(
             navController,
-            startDestination = Routes.LoginPage.value,
+            startDestination = Routes.Home.value,
             Modifier.padding(paddingValues)
         ) {
             composable(Routes.Home.value) {
@@ -76,14 +76,6 @@ fun BottomNavigationBar() {
             composable(Routes.Book.value) {
                 //About(navController)
             }
-            //composable(Routes.Registration.value){
-            //    Registration(navController)
-            //}
-            //composable(Routes.LoginPage.value){
-            //    LoginPage(navController)
-            //}
-
-
         }
     }
 }

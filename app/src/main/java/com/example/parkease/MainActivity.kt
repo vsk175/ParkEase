@@ -22,20 +22,10 @@ import com.google.firebase.FirebaseApp
 
 
 class MainActivity : ComponentActivity() {
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        FirebaseApp.initializeApp(this)
         setContent {
-            ParkEaseTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    MyApp()
-                }
-            }
+            BottomNavigationBar()
         }
     }
 }
@@ -46,31 +36,6 @@ fun Greeting(navController: NavController) {
         text = "Hello",
     )
 }
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun MyApp() {
-    val navController = rememberNavController()
-
-    NavHost(navController = navController, startDestination = "LoginPage") {
-        composable("LoginPage") {
-            LoginPage(navController = navController)
-        }
-        composable("Registration") {
-            Registration(navController = navController)
-        }
-        composable("Greeting") {
-            Greeting(navController = navController)
-        }
-        composable("Home") {
-            Home(navController)
-        }
-        composable("BottomNavigationBar"){
-            BottomNavigationBar()
-        }
-
-    }
-}
-
 
 
 @Preview(showBackground = true)

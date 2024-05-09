@@ -10,9 +10,9 @@
               <option name="connection">
                 <ConnectionSetting>
                   <option name="appId" value="com.example.parkease" />
-                  <option name="mobileSdkAppId" value="1:228381012274:android:ceb53022d72cb18810a72b" />
-                  <option name="projectId" value="parkease-edac0" />
-                  <option name="projectNumber" value="228381012274" />
+                  <option name="mobileSdkAppId" value="1:448685550271:android:cfde1c0397cada6cb8740a" />
+                  <option name="projectId" value="parkease-7bf40" />
+                  <option name="projectNumber" value="448685550271" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

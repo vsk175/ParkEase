@@ -4,13 +4,16 @@ package com.example.parkease
 import android.app.Activity
 import android.content.Intent
 import android.os.Build
+import android.os.Bundle
 import android.util.Log
 
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -62,6 +65,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.Firebase
+import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
@@ -69,31 +73,49 @@ import com.google.firebase.auth.auth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-
+class Login : AppCompatActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        FirebaseApp.initializeApp(this)
+        setContent {
+            LoginScreen()
+        }
+    }
+}
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginPage(navController: NavController) {
-
+fun LoginScreen() {
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        // Handle the result here
+        if (result.resultCode == Activity.RESULT_OK) {
+            // Handle success
+        } else {
+            // Handle failure or other cases
+        }
+    }
     val auth = Firebase.auth
     val currentUser by remember { mutableStateOf(auth.currentUser) }
     val context = LocalContext.current
-    if (currentUser == null) {
-        LoginElements(auth = auth, context = context, navController = navController)
-
-    } else {
-        navController.navigate("Home")
-        auth.signOut()
-
-
-
-
-    }
-
+    LoginElements(auth = auth, context = context, launcher)
+//    if (currentUser == null) {
+//        LoginElements(auth = auth, context = context, navController = navController)
+//
+//    } else {
+//        navController.navigate("Home")
+//        auth.signOut()
+//
+//
+//
+//
+//    }
 }
 @Composable
-fun LoginElements(auth: FirebaseAuth, context: android.content.Context,navController: NavController) {
+fun LoginElements(auth: FirebaseAuth, context: android.content.Context,launcher: ActivityResultLauncher<Intent>) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val passwordRegex = Regex("^(?=.*[\\W])(?=\\S+$).{8,}$")
@@ -159,7 +181,7 @@ fun LoginElements(auth: FirebaseAuth, context: android.content.Context,navContro
             )
             Row(horizontalArrangement = Arrangement.SpaceEvenly) {
                 Button(
-                    onClick = { signInWithEmailAndPassword(auth, context, username, password, navController = navController) },
+                    onClick = { signInWithEmailAndPassword(auth, context, username, password, launcher) },
                     colors = ButtonDefaults.buttonColors(Color.Yellow),
                     modifier = Modifier.padding(8.dp)
                 ) {
@@ -179,7 +201,7 @@ fun LoginElements(auth: FirebaseAuth, context: android.content.Context,navContro
                     val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
                     try {
                         val account = task.getResult(ApiException::class.java)
-                        firebaseAuthWithGoogle(account.idToken!!, navController)
+                        firebaseAuthWithGoogle(account.idToken!!,context, launcher)
                     } catch (e: ApiException) {
                         // Log or show the specific error
                         Log.e("Google Sign-In Error", "Sign-In Failed: ${e.statusCode}")
@@ -202,7 +224,7 @@ fun LoginElements(auth: FirebaseAuth, context: android.content.Context,navContro
 
 
             Button(
-                onClick = { navController.navigate("Registration") },
+                onClick = { navigateToRegister(context, launcher) },
                 shape = RoundedCornerShape(30),
                 colors = ButtonDefaults.buttonColors(Color.Yellow),
                 modifier = Modifier
@@ -216,14 +238,20 @@ fun LoginElements(auth: FirebaseAuth, context: android.content.Context,navContro
     }
 }
 
+private fun navigateToRegister(context: android.content.Context, launcher: ActivityResultLauncher<Intent>)
+{
+    val intent = Intent(context, Register::class.java)
+    launcher.launch(intent)
+}
 
-fun firebaseAuthWithGoogle(idToken: String,navController: NavController) {
+fun firebaseAuthWithGoogle(idToken: String,context: android.content.Context,launcher: ActivityResultLauncher<Intent>) {
     val credential = GoogleAuthProvider.getCredential(idToken, null)
     FirebaseAuth.getInstance().signInWithCredential(credential)
         .addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 // Sign-in succeeded, update UI with the signed-in user's information
-                navController.navigate("Home")
+                val intent = Intent(context, MainActivity::class.java)
+                launcher.launch(intent)
 
 
             } else {
@@ -239,7 +267,7 @@ private fun signInWithEmailAndPassword(
     context: android.content.Context,
     email: String,
     password: String,
-    navController: NavController
+    launcher: ActivityResultLauncher<Intent>
 ) {
     auth.signInWithEmailAndPassword(email, password)
         .addOnCompleteListener { task ->
@@ -247,7 +275,8 @@ private fun signInWithEmailAndPassword(
                 // Authentication success, navigate to home screen
                 // Implement navigation logic here, for now, just display a toast
                 Toast.makeText(context, "Authentication successful", Toast.LENGTH_SHORT).show()
-                navController.navigate("Home")
+                val intent = Intent(context, MainActivity::class.java)
+                launcher.launch(intent)
 
             } else {
                 // Authentication failed, display error message
