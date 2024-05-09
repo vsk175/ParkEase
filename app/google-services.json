@@ -1,33 +1,41 @@
 {
   "project_info": {
-    "project_number": "228381012274",
-    "project_id": "parkease-edac0",
-    "storage_bucket": "parkease-edac0.appspot.com"
+    "project_number": "448685550271",
+    "project_id": "parkease-7bf40",
+    "storage_bucket": "parkease-7bf40.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:228381012274:android:ceb53022d72cb18810a72b",
+        "mobilesdk_app_id": "1:448685550271:android:cfde1c0397cada6cb8740a",
         "android_client_info": {
           "package_name": "com.example.parkease"
         }
       },
       "oauth_client": [
         {
-          "client_id": "228381012274-bfuvlg2u3q30iqakcgrdfloo2513ujal.apps.googleusercontent.com",
+          "client_id": "448685550271-qk4amoklgrv9f3m60e6u54spg9h719bl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.parkease",
+            "certificate_hash": "d5689b52021d15cf597eee774be9419b0b14598b"
+          }
+        },
+        {
+          "client_id": "448685550271-hchg1dr263e6q3s7lp40rv9blsflrc38.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDlVrcSfNJNq2zhRE42O23mRf0kFh82Wbg"
+          "current_key": "AIzaSyCCfw_lJZbQcnK9hNNhJ-wfBNbaYe7BZvE"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "228381012274-bfuvlg2u3q30iqakcgrdfloo2513ujal.apps.googleusercontent.com",
+              "client_id": "448685550271-hchg1dr263e6q3s7lp40rv9blsflrc38.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

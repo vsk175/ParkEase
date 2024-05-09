@@ -70,6 +70,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 
+
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -165,9 +166,29 @@ fun LoginElements(auth: FirebaseAuth, context: android.content.Context,navContro
                     Text("Login", color = Color.Black)
                 }
 
+                val context = LocalContext.current
+                val signInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken("448685550271-hchg1dr263e6q3s7lp40rv9blsflrc38.apps.googleusercontent.com") // Get this from your google-services.json
+                    .requestEmail()
+                    .build()
+                val googleSignInClient = GoogleSignIn.getClient(context, signInOptions)
+
+                val authResultLauncher = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.StartActivityForResult()
+                ) { result ->
+                    val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                    try {
+                        val account = task.getResult(ApiException::class.java)
+                        firebaseAuthWithGoogle(account.idToken!!, navController)
+                    } catch (e: ApiException) {
+                        // Log or show the specific error
+                        Log.e("Google Sign-In Error", "Sign-In Failed: ${e.statusCode}")
+                    }
+                }
 
                 Button(
-                    onClick = { }) {
+                    onClick = { val signInIntent = googleSignInClient.signInIntent
+                        authResultLauncher.launch(signInIntent) }) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_google_logo),
                         contentDescription = null,
@@ -196,7 +217,20 @@ fun LoginElements(auth: FirebaseAuth, context: android.content.Context,navContro
 }
 
 
+fun firebaseAuthWithGoogle(idToken: String,navController: NavController) {
+    val credential = GoogleAuthProvider.getCredential(idToken, null)
+    FirebaseAuth.getInstance().signInWithCredential(credential)
+        .addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                // Sign-in succeeded, update UI with the signed-in user's information
+                navController.navigate("Home")
 
+
+            } else {
+                // If sign-in fails, display a message to the user.
+            }
+        }
+}
 
 
 
