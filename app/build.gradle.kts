@@ -69,7 +69,7 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth-ktx:23.0.0")
     implementation("com.google.android.gms:play-services-auth:21.1.1")
-    implementation("com.google.firebase:firebase-firestore-ktx:24.0.1")
+    implementation("com.google.firebase:firebase-firestore-ktx:25.0.0")
     // Google Maps
     implementation("com.google.maps.android:maps-compose:4.3.3")
 
