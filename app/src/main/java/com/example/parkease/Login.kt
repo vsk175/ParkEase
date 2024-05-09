@@ -27,24 +27,15 @@ import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -57,21 +48,15 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.Firebase
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.auth
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+
 
 class Login : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -85,7 +70,6 @@ class Login : AppCompatActivity() {
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen() {
     val launcher = rememberLauncherForActivityResult(
@@ -118,7 +102,7 @@ fun LoginScreen() {
 fun LoginElements(auth: FirebaseAuth, context: android.content.Context,launcher: ActivityResultLauncher<Intent>) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    val passwordRegex = Regex("^(?=.*[\\W])(?=\\S+$).{8,}$")
+    var passwordErrors by remember { mutableStateOf(listOf<String>()) }
     var showPassword by remember { mutableStateOf(false) }
     Column {
         AppBar()
@@ -155,20 +139,15 @@ fun LoginElements(auth: FirebaseAuth, context: android.content.Context,launcher:
 
                 )
             OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
+                value = password, onValueChange = {  password = it
+                    passwordErrors = validatePassword(password)},
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
-                label = { Text(text = "Password") },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Outlined.Lock,
-                        contentDescription = null
-                    )
-                },
+                label = { Text(text = "Password")},
+                leadingIcon = { Icon(imageVector = Icons.Outlined.Lock, contentDescription = null) },
                 singleLine = true,
-                //isError = password.isNotEmpty(),
+                isError = passwordErrors.isNotEmpty(),
                 visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
                     IconButton(onClick = { showPassword = !showPassword }) {

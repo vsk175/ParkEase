@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.service.autofill.OnClickAction
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -14,15 +13,11 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
@@ -37,21 +32,15 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberDatePickerState
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -66,18 +55,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
-
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.example.parkease.ui.theme.ParkEaseTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.auth.User
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -109,11 +91,11 @@ fun Registration(){
     var lastname by remember { mutableStateOf("")}
     var useremail by remember { mutableStateOf("")}
     val pattern = remember { Regex("[a-zA-Z\\s]*") }
-    val passwordRegex = Regex("^(?=.*[\\W])(?=\\S+$).{8,}$")
     var phoneNumber by remember { mutableStateOf("")}
     var useraddress by remember { mutableStateOf("") }
     val states = listOf("VIC", "QLD", "NSW", "SA", "TAS", "WA", "ACT", "NT")
     var password by remember { mutableStateOf("") }
+    var passwordErrors by remember { mutableStateOf(listOf<String>()) }
     var isExpanded by remember { mutableStateOf(false)}
     var selectedState by remember { mutableStateOf(states[0]) }
     val context = LocalContext.current
@@ -164,7 +146,7 @@ Column {
 
         OutlinedTextField(
             value = phoneNumber,
-            onValueChange = {if(it.length <= 10 ) phoneNumber = it },
+            onValueChange = {if(it.length == 10 ) phoneNumber = it },
             label = { Text("Phone Number")},
             leadingIcon = {Icon(imageVector = Icons.Outlined.Phone, contentDescription = null)},
             modifier = Modifier
@@ -188,13 +170,15 @@ Column {
             singleLine = true
             )
         OutlinedTextField(
-            value = password, onValueChange = {  password = it },
+            value = password, onValueChange = {  password = it
+                passwordErrors = validatePassword(password)},
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp),
             label = { Text(text = "Password")},
             leadingIcon = { Icon(imageVector = Icons.Outlined.Lock, contentDescription = null) },
             singleLine = true,
+            isError = passwordErrors.isNotEmpty(),
             visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = {
                 IconButton(onClick = { showPassword = !showPassword }) {
@@ -363,27 +347,31 @@ fun CustomDatePickerDialog(
     }
 }
 
-fun isValidEmail(email: String): Boolean {
-    // Basic email validation, you can implement more sophisticated validation
-    val emailRegex = Regex("^\\w+@[a-zA-Z_]+?\\.[a-zA-Z]{2,3}\$")
-    return emailRegex.matches(email)
-}
 
+fun validatePassword(password: String): List<String> {
+    val errors = mutableListOf<String>()
 
-
-@Preview
-@Composable
-@RequiresApi(Build.VERSION_CODES.O)
-fun registrationpreview(){
-    ParkEaseTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
-        ) {
-            Registration()
-        }
+    if (password.length < 8) {
+        errors.add("Password must be at least 8 characters long.")
     }
+    if (!password.any { it.isDigit() }) {
+        errors.add("Password must contain at least one digit.")
+    }
+    if (!password.any { it.isUpperCase() }) {
+        errors.add("Password must contain at least one uppercase letter.")
+    }
+    if (!password.any { it.isLowerCase() }) {
+        errors.add("Password must contain at least one lowercase letter.")
+    }
+    if (!password.any { it in "!@#$%^&*()-+=" }) {
+        errors.add("Password must contain at least one special character (!@#$%^&*()-+=).")
+    }
+
+    return errors
 }
+
+
+
 
 
 
