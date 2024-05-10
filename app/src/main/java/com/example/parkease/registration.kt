@@ -241,8 +241,6 @@ Column {
                 modifier = Modifier.padding(horizontal = 8.dp)
                 )
 
-
-
                 IconButton(
                     onClick = { isOpen.value = true } // show de dialog
                 ) {
@@ -270,7 +268,6 @@ Column {
                     .padding(horizontal = 8.dp, vertical = 8.dp))
             {
                 Text(text ="Back to Login", color = Color.Black)
-
             }
             Button(
                 onClick = {registerUser(useremail, password, firebaseAuth, context)
@@ -326,7 +323,7 @@ fun registerUser(email: String, password: String, auth: FirebaseAuth, context: C
 @Composable
 fun CustomDatePickerDialog(
     onAccept: (Long?) -> Unit,
-    onCancel: () -> Unit
+    onCancel: () -> Unit,
 ) {
     val state = rememberDatePickerState()
 

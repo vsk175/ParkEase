@@ -11,6 +11,8 @@ interface ParkingDAO {
     @Query("SELECT * FROM ParkingPlace")
     fun getAllParkingPlaces(): Flow<List<ParkingPlace>>
 
+    @Query("SELECT * FROM ParkingPlace WHERE availableSpots > 0")
+    fun getParkingPlacesWithAvailableSpots(): Flow<List<ParkingPlace>>
     @Insert
     suspend fun insertParkingPlace(parkingPlace: ParkingPlace)
 

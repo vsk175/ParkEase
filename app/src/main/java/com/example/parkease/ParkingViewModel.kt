@@ -13,6 +13,7 @@ class ParkingViewModel(application: Application) : AndroidViewModel(application)
     private val repository: ParkingRepository = ParkingRepository(application)
 
     val allParkingPlaces: LiveData<List<ParkingPlace>> = repository.allParkingPlaces.asLiveData()
+    val allAvailableParkingPlaces: LiveData<List<ParkingPlace>> = repository.allAvailableParkingPlaces.asLiveData()
     val allBooking: LiveData<List<Booking>> = repository.allBookings.asLiveData()
 
     fun insert(parkingPlace: ParkingPlace) {

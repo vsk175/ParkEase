@@ -8,6 +8,7 @@ class ParkingRepository (application: Application) {
     private var parkingDao: ParkingDAO = ParkingDatabase.getDatabase(application).parkingDao()
 
     val allParkingPlaces: Flow<List<ParkingPlace>> = parkingDao.getAllParkingPlaces()
+    val allAvailableParkingPlaces: Flow<List<ParkingPlace>> = parkingDao.getParkingPlacesWithAvailableSpots()
     val allBookings: Flow<List<Booking>> = parkingDao.getAllBookings()
 
     suspend fun insert(parkingPlace: ParkingPlace) {
