@@ -160,7 +160,7 @@ fun LoginElements(auth: FirebaseAuth, context: android.content.Context,launcher:
                     }
                 }
             )
-            Row(horizontalArrangement = Arrangement.SpaceEvenly) {
+            Row{
                 Button(
                     onClick = { signInWithEmailAndPassword(auth, context, username, password, launcher) },
                     colors = ButtonDefaults.buttonColors(Color.Yellow),
@@ -189,13 +189,14 @@ fun LoginElements(auth: FirebaseAuth, context: android.content.Context,launcher:
                     }
                 }
 
-                Button(
-                    onClick = { val signInIntent = googleSignInClient.signInIntent
+
+                Button(modifier = Modifier.padding(top = 6.dp)
+                    ,onClick = { val signInIntent = googleSignInClient.signInIntent
                         authResultLauncher.launch(signInIntent) }) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_google_logo),
                         contentDescription = null,
-                        modifier = Modifier.padding(horizontal = 4.dp)
+                        modifier = Modifier.padding(horizontal = 8.dp)
                     )
                     Text(text = " Google Sign-in", color = Color.White)
                 }
@@ -237,6 +238,8 @@ fun firebaseAuthWithGoogle(idToken: String,context: android.content.Context,laun
 
             } else {
                 // If sign-in fails, display a message to the user.
+                Toast.makeText(context, "Authentication failed", Toast.LENGTH_SHORT).show()
+
             }
         }
 }
@@ -250,21 +253,30 @@ private fun signInWithEmailAndPassword(
     password: String,
     launcher: ActivityResultLauncher<Intent>
 ) {
-    auth.signInWithEmailAndPassword(email, password)
-        .addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                // Authentication success, navigate to home screen
-                // Implement navigation logic here, for now, just display a toast
-                Toast.makeText(context, "Authentication successful", Toast.LENGTH_SHORT).show()
-                val intent = Intent(context, MainActivity::class.java)
-                launcher.launch(intent)
+    if (email.isNotEmpty() && password.isNotEmpty()){
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    // Authentication success, navigate to home screen
+                    // Implement navigation logic here, for now, just display a toast
+                    Toast.makeText(context, "Authentication successful", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(context, MainActivity::class.java)
+                    launcher.launch(intent)
 
-            } else {
-                // Authentication failed, display error message
-                // Implement error handling UI, for now, just display a toast
-                Toast.makeText(context, "Authentication failed", Toast.LENGTH_SHORT).show()
+                } else {
+                    // Authentication failed, display error message
+                    // Implement error handling UI, for now, just display a toast
+                    Toast.makeText(context, "Authentication failed", Toast.LENGTH_SHORT).show()
+                }
             }
-        }
+
+
+    }
+    else {
+        Toast.makeText(context, "Authentication failed", Toast.LENGTH_SHORT).show()
+        navigateToLogin(context, launcher)
+    }
+
 }
 
 

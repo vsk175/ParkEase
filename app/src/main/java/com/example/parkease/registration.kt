@@ -146,7 +146,7 @@ Column {
 
         OutlinedTextField(
             value = phoneNumber,
-            onValueChange = {if(it.length == 10 ) phoneNumber = it },
+            onValueChange = { phoneNumber = it },
             label = { Text("Phone Number")},
             leadingIcon = {Icon(imageVector = Icons.Outlined.Phone, contentDescription = null)},
             modifier = Modifier
@@ -158,7 +158,7 @@ Column {
             ),
 
 
-            isError = phoneNumber.isNotEmpty() && phoneNumber.length != 10,
+            isError = phoneNumber.length != 10,
         )
 
         OutlinedTextField(value = useraddress, onValueChange = {useraddress = it},
@@ -270,7 +270,7 @@ Column {
                 Text(text ="Back to Login", color = Color.Black)
             }
             Button(
-                onClick = {registerUser(useremail, password, firebaseAuth, context)
+                onClick = {registerUser(useremail, password, firebaseAuth, context, launcher)
                     saveUserInfo(firstname,lastname,useremail,phoneNumber,useraddress,db)}, colors = ButtonDefaults.buttonColors(Color.Yellow),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -285,7 +285,7 @@ Column {
 }
 }
 
-private fun navigateToLogin(context: android.content.Context, launcher: ActivityResultLauncher<Intent>)
+fun navigateToLogin(context: android.content.Context, launcher: ActivityResultLauncher<Intent>)
 {
     val intent = Intent(context, Login::class.java)
     launcher.launch(intent)
@@ -304,12 +304,14 @@ private fun saveUserInfo(firstname:String, lastname:String,email:String,phonenum
         }
 }
 
-fun registerUser(email: String, password: String, auth: FirebaseAuth, context: Context) {
+fun registerUser(email: String, password: String, auth: FirebaseAuth, context: Context,launcher: ActivityResultLauncher<Intent>) {
     if (email.isNotEmpty() && password.isNotEmpty()) {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Toast.makeText(context, "Registration successful!: ", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(context, MainActivity::class.java)
+                    launcher.launch(intent)
                 } else {
                     Toast.makeText(context, "Registration failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
                 }
