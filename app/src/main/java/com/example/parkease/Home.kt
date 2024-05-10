@@ -81,11 +81,29 @@ fun Home(navController: NavController) {
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            MapCardView(context, fusedLocationProviderClient)
-            Spacer(modifier = Modifier.weight(1f))
-            NearbyPlacesSearch(placesViewModel)
-            Spacer(modifier = Modifier.weight(1f))
-            ParkingPlacesList(parkingViewModel)
+            Box(
+                modifier = Modifier
+                    .weight(0.3f)
+                    .fillMaxWidth()
+            ) {
+                MapCardView(context, fusedLocationProviderClient)
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Box(
+                modifier = Modifier
+                    .weight(0.4f)
+                    .fillMaxWidth()
+            ) {
+                NearbyPlacesSearch(placesViewModel)
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Box(
+                modifier = Modifier
+                    .weight(0.4f)
+                    .fillMaxWidth()
+            ) {
+                ParkingPlacesList(parkingViewModel)
+            }
         }
     }
 }

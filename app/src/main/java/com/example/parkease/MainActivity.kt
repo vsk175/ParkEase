@@ -4,7 +4,7 @@ package com.example.parkease
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-
+import androidx.room.Room
 
 
 class MainActivity : ComponentActivity() {
@@ -15,3 +15,5 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+

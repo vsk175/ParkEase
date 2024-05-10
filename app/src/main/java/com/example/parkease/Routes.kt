@@ -5,6 +5,4 @@ enum class Routes(val value: String) {
     Profile("Profile"),
     About("About"),
     Book("Book"),
-    LoginPage("Login"),
-    Registration("Registration")
 }

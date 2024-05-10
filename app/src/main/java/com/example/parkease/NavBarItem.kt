@@ -25,12 +25,12 @@ data class NavBarItem (
                 route = Routes.Profile.value
             ),
             NavBarItem(
-                label = "About",
+                label = "History",
                 icon = Icons.Filled.Person,
                 route = Routes.About.value
             ),
             NavBarItem(
-                label = "Book",
+                label = "Booking",
                 icon = Icons.Filled.AddCircle,
                 route = Routes.Book.value
             )

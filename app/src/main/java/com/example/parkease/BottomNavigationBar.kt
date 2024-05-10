@@ -74,7 +74,7 @@ fun BottomNavigationBar() {
                 //About(navController)
             }
             composable(Routes.Book.value) {
-                //About(navController)
+                Book(navController)
             }
         }
     }

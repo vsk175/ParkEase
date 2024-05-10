@@ -1,9 +1,15 @@
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("androidx.room") version "2.6.1"
     id("com.google.gms.google-services")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     id("com.google.devtools.ksp")
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
 android {
@@ -51,6 +57,8 @@ android {
         }
     }
 }
+
+
 
 dependencies {
 
