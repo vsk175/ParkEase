@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -34,19 +35,30 @@ fun History(navController: NavController) {
     val bookingHistory by viewModel.getBookingsByUserId(userId).collectAsState(initial = emptyList())
     val parkingPlaces by viewModel.allAvailableParkingPlaces.observeAsState(initial = emptyList())
 
-    Column(modifier = Modifier.fillMaxSize()) {
-    Text(
-        text = "Your Parking History",
-        style = MaterialTheme.typography.h6,
-        fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(bottom = 8.dp, start = 16.dp, end = 16.dp, top = 16.dp) // Add space below the heading and some horizontal padding
-    )
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        items(bookingHistory) { booking ->
-            val parkingPlace = parkingPlaces.find { it.id == booking.placeId }
-            parkingPlace?.let {
-                HistoryItem(booking = booking, parkingPlace = it)
-            }
+    Scaffold(
+        topBar = {
+            AppBar()
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            Text(
+                text = "Your Parking History",
+                style = MaterialTheme.typography.h5,
+                color = Color.Blue,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 8.dp, start = 16.dp, end = 16.dp, top = 16.dp) // Add space below the heading and some horizontal padding
+            )
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                items(bookingHistory) { booking ->
+                    val parkingPlace = parkingPlaces.find { it.id == booking.placeId }
+                    parkingPlace?.let {
+                        HistoryItem(booking = booking, parkingPlace = it)
+                    }
+                }
             }
         }
     }
@@ -63,38 +75,38 @@ fun HistoryItem(booking: Booking, parkingPlace: ParkingPlace) {
             defaultElevation = 6.dp
         ),
         modifier = Modifier
-            .size(width = 300.dp, height = 200.dp)
+            .fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = "Booking ID: ${booking.id}",
-                style = MaterialTheme.typography.subtitle1,
+                style = MaterialTheme.typography.h5,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
             Text(
                 text = "Date: ${dateFormatter.format(booking.bookingDate)}",
-                style = MaterialTheme.typography.body2,
+                style = MaterialTheme.typography.h5,
                 modifier = Modifier.padding(bottom = 4.dp)
             )
             Text(
                 text = "Time: ${timeFormatter.format(booking.bookingTime)}",
-                style = MaterialTheme.typography.body2,
+                style = MaterialTheme.typography.h5,
                 modifier = Modifier.padding(bottom = 4.dp)
             )
             Text(
                 text = "Duration: ${booking.durationHours} hours",
-                style = MaterialTheme.typography.body2,
+                style = MaterialTheme.typography.h5,
                 modifier = Modifier.padding(bottom = 4.dp)
             )
             Text(
                 text = "Parking Name: ${parkingPlace.name}",
-                style = MaterialTheme.typography.body2,
+                style = MaterialTheme.typography.h6,
                 modifier = Modifier.padding(bottom = 4.dp)
             )
             Text(
                 text = "Parking Address: ${parkingPlace.address}",
-                style = MaterialTheme.typography.body2,
+                style = MaterialTheme.typography.h6,
                 modifier = Modifier.padding(bottom = 4.dp)
             )
         }

@@ -16,6 +16,9 @@ interface ParkingDAO {
     @Insert
     suspend fun insertParkingPlace(parkingPlace: ParkingPlace)
 
+    @Query("UPDATE ParkingPlace SET availableSpots = availableSpots - 1 WHERE id = :parkingPlaceId")
+    suspend fun decreaseAvailableSpots(parkingPlaceId: Int)
+
     @Query("DELETE FROM ParkingPlace")
     suspend fun deleteAllParkingPlaces()
 

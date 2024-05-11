@@ -5,6 +5,7 @@ import android.app.TimePickerDialog
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -33,14 +35,24 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.*
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardElevation
+import androidx.compose.material3.Scaffold
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 
 
 class BookingActivity : ComponentActivity() {
     private lateinit var viewModel: ParkingViewModel
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,17 +62,30 @@ class BookingActivity : ComponentActivity() {
             val parkingName = intent.getStringExtra("parkingName")
             val parkingAddress = intent.getStringExtra("parkingAddress")
 
-            Column {
-                ParkingPlaceInfo(parkingName ?: "", parkingAddress ?: "", parkingId ?: "")
-                Spacer(modifier = Modifier.height(16.dp))
-                if (parkingId != null) {
-                    BookingForm(onBookClick = { booking ->
-                        viewModel.insertBooking(booking)
-                    }, parkingId.toInt())
+            Scaffold(
+                topBar = {
+                    AppBar()
+                }
+            ) { innerPadding ->
+                Column(
+                    modifier = Modifier.padding(innerPadding)
+                ) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    ParkingPlaceInfo(parkingName ?: "", parkingAddress ?: "", parkingId ?: "")
+                    Spacer(modifier = Modifier.height(4.dp))
+                    if (parkingId != null) {
+                        BookingForm(onBookClick = { booking ->
+                            viewModel.insertBooking(booking)
+                            viewModel.decreaseAvailableSpots(parkingId.toInt())
+                            finish()
+                        }, parkingId.toInt())
+                    }
                 }
             }
         }
     }
+}
+
 
 @Composable
 fun ParkingPlaceInfo(name: String, address: String, id: String) {
@@ -69,40 +94,45 @@ fun ParkingPlaceInfo(name: String, address: String, id: String) {
     ) {
         Text(
             text = "Parking Place Name",
-            color = Color.DarkGray,
-            fontSize = 14.sp,
+            color = Color.Black,
+            fontSize = 20.sp,
             modifier = Modifier.padding(bottom = 4.dp)
         )
         Text(
             text = name,
             style = MaterialTheme.typography.titleLarge,
+            color = Color.Magenta,
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
         Text(
             text = "Address",
-            color = Color.DarkGray,
-            fontSize = 14.sp,
+            color = Color.Black,
+            fontSize = 20.sp,
             modifier = Modifier.padding(bottom = 4.dp)
         )
         Text(
             text = address,
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.titleLarge,
+            color = Color.Magenta,
             modifier = Modifier.padding(bottom = 16.dp)
         )
     }
 }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    @Composable
-    fun BookingForm(onBookClick: (Booking) -> Unit, parkingId: Int) {
-        val (bookingDate, setBookingDate) = remember { mutableStateOf(Date()) }
-        val (bookingTime, setBookingTime) = remember { mutableStateOf(Date()) }
-        val (durationHours, setDurationHours) = remember { mutableStateOf(TextFieldValue()) }
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun BookingForm(onBookClick: (Booking) -> Unit, parkingId: Int) {
+    val (bookingDate, setBookingDate) = remember { mutableStateOf(Date()) }
+    val (bookingTime, setBookingTime) = remember { mutableStateOf(Date()) }
+    val (durationHours, setDurationHours) = remember { mutableStateOf(TextFieldValue()) }
+    val (errorText, setErrorText) = remember { mutableStateOf("") }
 
-        // Jetpack Compose doesn't have a DatePicker yet, so we use AndroidView to wrap it
-        val context = LocalContext.current
-
+    val context = LocalContext.current
+    Card(
+        elevation = CardDefaults.cardElevation(),
+        modifier = Modifier.padding(16.dp)
+    ) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
@@ -113,12 +143,12 @@ fun ParkingPlaceInfo(name: String, address: String, id: String) {
             ) {
                 Text(
                     text = "Selected Booking Date:",
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.weight(1f)
                 )
                 Text(
                     text = formatDate(bookingDate),
-                    style = MaterialTheme.typography.bodyLarge
+                    style = MaterialTheme.typography.titleMedium
                 )
                 IconButton(
                     onClick = {
@@ -145,12 +175,15 @@ fun ParkingPlaceInfo(name: String, address: String, id: String) {
             ) {
                 Text(
                     text = "Selected Booking Time:",
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.weight(1f)
                 )
                 Text(
-                    text = formatDate(bookingTime, "HH:mm"), // Format time to show only hours and minutes
-                    style = MaterialTheme.typography.bodyLarge
+                    text = formatDate(
+                        bookingTime,
+                        "HH:mm"
+                    ), // Format time to show only hours and minutes
+                    style = MaterialTheme.typography.titleMedium
                 )
                 IconButton(
                     onClick = {
@@ -169,11 +202,19 @@ fun ParkingPlaceInfo(name: String, address: String, id: String) {
             // Field for the duration of booking in hours
             TextField(
                 value = durationHours,
-                onValueChange = { setDurationHours(it) },
+                onValueChange = { setDurationHours(it)
+                    setErrorText("")},
                 label = { Text("Duration (hours)") },
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
+            )
+            Text(
+                text = errorText,
+                color = Color.Red,
+                style = TextStyle(fontSize = 12.sp),
+                modifier = Modifier.padding(bottom = 8.dp)
             )
 
             val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
@@ -181,8 +222,12 @@ fun ParkingPlaceInfo(name: String, address: String, id: String) {
             // Button to submit booking
             Button(
                 onClick = {
-                    val durationHoursValue = durationHours.text.toIntOrNull() ?: 0
-                    val booking = Booking(
+                    val durationHoursText = durationHours.text
+                    if (durationHoursText.isEmpty()) {
+                        setErrorText("Duration (hours) is required")
+                    } else {
+                        val durationHoursValue = durationHoursText.toInt()
+                        val booking = Booking(
                             placeId = parkingId, // Convert parkingId to Int
                             userId = userId,
                             bookingDate = bookingDate,
@@ -190,14 +235,19 @@ fun ParkingPlaceInfo(name: String, address: String, id: String) {
                             durationHours = durationHoursValue, // Convert text to Int or default to 0
                             status = BookingStatus.ACTIVE
                         )
-                    onBookClick(booking)
+                        onBookClick(booking)
+                        Toast.makeText(context, "Booking Confirmed", Toast.LENGTH_SHORT).show()
+                    }
                 },
-                modifier = Modifier.padding(vertical = 16.dp)
+                modifier = Modifier
+                    .padding(vertical = 16.dp)
+                    .fillMaxWidth(1f)
             ) {
-                Text("Book")
+                Text("Book Parking Spot")
             }
         }
     }
+}
 
 // Function to format Date to string with specified pattern
 private fun formatDate(date: Date, pattern: String): String {
@@ -235,7 +285,7 @@ private fun showDatePickerDialog(
     datePicker.datePicker.minDate = minCalendar.timeInMillis
     datePicker.show()
 }
-}
+
 
 // Function to format Date to string with date only
 fun formatDate(date: Date): String {

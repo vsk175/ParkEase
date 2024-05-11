@@ -49,7 +49,7 @@ fun Book(navController: NavController) {
                     .weight(1f)
                     .fillMaxWidth()
             ) {
-                BookingParkingList(parkingViewModel)
+                BookingParkingList(parkingViewModel, navController)
             }
             Spacer(modifier = Modifier.height(8.dp))
             Box(
@@ -71,7 +71,7 @@ fun Book(navController: NavController) {
 }
 
 @Composable
-fun BookingParkingList(viewModel: ParkingViewModel) {
+fun BookingParkingList(viewModel: ParkingViewModel, navController: NavController) {
     val context = LocalContext.current
     // Collect the LiveData into a state that Compose can watch
     val parkingPlaces by viewModel.allAvailableParkingPlaces.observeAsState(initial = emptyList())
@@ -80,20 +80,21 @@ fun BookingParkingList(viewModel: ParkingViewModel) {
     Column(modifier = Modifier.fillMaxSize()) {
         Text(
             text = " Available Parking Places ",
-            style = MaterialTheme.typography.h6,
+            style = MaterialTheme.typography.h5,
+            color = Color.Blue,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 8.dp, start = 16.dp, end = 16.dp, top = 16.dp) // Add space below the heading and some horizontal padding
         )
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(parkingPlaces) { parkingPlace ->
-                PlaceItem(parkingPlace, context)
+                PlaceItem(parkingPlace, context, navController)
             }
         }
     }
 }
 
 @Composable
-fun PlaceItem(parkingPlace: ParkingPlace, context: android.content.Context) {
+fun PlaceItem(parkingPlace: ParkingPlace, context: android.content.Context, navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -103,6 +104,7 @@ fun PlaceItem(parkingPlace: ParkingPlace, context: android.content.Context) {
                     putExtra("parkingId", parkingPlace.id.toString())
                     putExtra("parkingName", parkingPlace.name)
                     putExtra("parkingAddress", parkingPlace.address)
+                    putExtra("navController", navController.toString())
                 }
                 context.startActivity(intent)
             }

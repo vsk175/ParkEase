@@ -13,13 +13,17 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -56,40 +60,61 @@ fun Profile(navController: NavController) {
     val auth = FirebaseAuth.getInstance()
     val user = auth.currentUser
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text("User Profile", modifier = Modifier.padding(8.dp))
-
-        user?.email?.let { email ->
-            Text(text = "Email: $email",modifier = Modifier.padding(8.dp))
+    Scaffold(
+        topBar = {
+            AppBar()
         }
-        Button(onClick = {
-            if (user != null) {
-                navigateToChangePassword(user, context, launcher)
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Spacer(modifier = Modifier.height(32.dp))
+            Text(
+                text = "User Profile",
+                style = MaterialTheme.typography.headlineLarge,
+                color = Color.Blue,
+                modifier = Modifier.padding(vertical = 16.dp)
+            )
+
+            user?.email?.let { email ->
+                Text(
+                    text = "Email: $email",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
             }
-        },
-            modifier = Modifier
-                .padding(horizontal = 8.dp, vertical = 8.dp))
-        {
-            Text(text ="Change Password")
 
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {
+                    if (user != null) {
+                        navigateToChangePassword(user, context, launcher)
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .padding(vertical = 8.dp)
+            ) {
+                Text(text = "Change Password")
+            }
+
+            Button(
+                onClick = { navigateToLoginFromProfile(context, launcher) },
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .padding(vertical = 8.dp)
+            ) {
+                Text(text = "Sign-Out")
+            }
         }
-        Button(onClick = { navigateToLoginFromProfile(context, launcher)},
-            modifier = Modifier
-                .padding(horizontal = 8.dp, vertical = 8.dp))
-        {
-            Text(text ="Sign-Out")
-
-        }
-
-
     }
 }
+
+
 
 fun navigateToLoginFromProfile(context: android.content.Context, launcher: ActivityResultLauncher<Intent>)
 {
