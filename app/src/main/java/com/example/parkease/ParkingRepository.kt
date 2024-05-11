@@ -9,7 +9,9 @@ class ParkingRepository (application: Application) {
 
     val allParkingPlaces: Flow<List<ParkingPlace>> = parkingDao.getAllParkingPlaces()
     val allAvailableParkingPlaces: Flow<List<ParkingPlace>> = parkingDao.getParkingPlacesWithAvailableSpots()
-    val allBookings: Flow<List<Booking>> = parkingDao.getAllBookings()
+    fun getBookingsByUserId(userId: String): Flow<List<Booking>> {
+        return parkingDao.getBookingsByUserId(userId)
+    }
 
     suspend fun insert(parkingPlace: ParkingPlace) {
         parkingDao.insertParkingPlace(parkingPlace)
@@ -17,10 +19,6 @@ class ParkingRepository (application: Application) {
 
     suspend fun insertBooking(booking: Booking) {
         parkingDao.insertBooking(booking)
-    }
-
-    fun getBookingsByUserId(userId: String): Flow<List<Booking>> {
-        return parkingDao.getBookingsByUserId(userId)
     }
 
     suspend fun deleteAllParkingPlaces() {

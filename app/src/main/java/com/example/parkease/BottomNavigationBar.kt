@@ -23,6 +23,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.google.api.ResourceDescriptor.History
 
 //@RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -31,12 +32,11 @@ fun BottomNavigationBar() {
     Scaffold(
         bottomBar = {
             BottomNavigation (backgroundColor= Color.LightGray ){
-                val navBackStackEntry by
-                navController.currentBackStackEntryAsState()
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentDestination = navBackStackEntry?.destination
                 NavBarItem().navBarItems().forEach { navItem ->
                     BottomNavigationItem(
-                        icon = { Icon(Icons.Filled.Home, contentDescription =
+                        icon = { Icon(navItem.icon, contentDescription =
                         null) },
                         label = { Text(navItem.label) },
                         selected = currentDestination?.hierarchy?.any {
@@ -68,13 +68,16 @@ fun BottomNavigationBar() {
                 Home(navController)
             }
             composable(Routes.Profile.value) {
-                Profile(navController)
+                //Profile(navController)
             }
-            composable(Routes.About.value) {
-                //About(navController)
+            composable(Routes.History.value) {
+                History(navController)
             }
             composable(Routes.Book.value) {
                 Book(navController)
+            }
+            composable(Routes.Map.value) {
+                Map(navController)
             }
         }
     }

@@ -14,8 +14,10 @@ class ParkingViewModel(application: Application) : AndroidViewModel(application)
 
     val allParkingPlaces: LiveData<List<ParkingPlace>> = repository.allParkingPlaces.asLiveData()
     val allAvailableParkingPlaces: LiveData<List<ParkingPlace>> = repository.allAvailableParkingPlaces.asLiveData()
-    val allBooking: LiveData<List<Booking>> = repository.allBookings.asLiveData()
 
+    fun getBookingsByUserId(userId: String): Flow<List<Booking>> {
+        return repository.getBookingsByUserId(userId)
+    }
     fun insert(parkingPlace: ParkingPlace) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.insert(parkingPlace)
@@ -26,9 +28,7 @@ class ParkingViewModel(application: Application) : AndroidViewModel(application)
             repository.insertBooking(booking)
         }
     }
-    fun getBookingsByUserId(userId: String): Flow<List<Booking>> {
-        return repository.getBookingsByUserId(userId)
-    }
+
     fun deleteAllParkingPlaces() {
         viewModelScope.launch(Dispatchers.IO) {
             repository.deleteAllParkingPlaces()

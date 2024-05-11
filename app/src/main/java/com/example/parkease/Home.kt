@@ -26,7 +26,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material3.Button
@@ -53,6 +55,9 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -88,26 +93,26 @@ fun Home(navController: NavController) {
         ) {
             Box(
                 modifier = Modifier
+                    .weight(0.4f)
+                    .fillMaxWidth()
+            ) {
+                ParkingPlacesList(parkingViewModel)
+            }
+            Spacer(modifier = Modifier.height(4.dp))
+            Box(
+                modifier = Modifier
                     .weight(0.3f)
                     .fillMaxWidth()
             ) {
                 MapCardView(context, fusedLocationProviderClient)
             }
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
             Box(
                 modifier = Modifier
                     .weight(0.4f)
                     .fillMaxWidth()
             ) {
                 NearbyPlacesSearch(placesViewModel)
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Box(
-                modifier = Modifier
-                    .weight(0.4f)
-                    .fillMaxWidth()
-            ) {
-                ParkingPlacesList(parkingViewModel)
             }
         }
     }
@@ -245,7 +250,16 @@ fun NearbyPlacesSearch(viewModel: PlacesViewModel) {
     // Get the current context to use the Geocoder class
     val context = LocalContext.current
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(modifier = Modifier
+        .padding(8.dp)
+        .verticalScroll(rememberScrollState())) {
+        Text(
+            text = "Find Train Stations nearest to our Parking",
+            style = MaterialTheme.typography.h6,
+            color = Color.DarkGray,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.padding(bottom = 8.dp, start = 8.dp, end = 8.dp, top = 8.dp) // Add space below the heading and some horizontal padding
+        )
         Row(modifier = Modifier.fillMaxWidth()){
             // Place Name Input
             OutlinedTextField(
@@ -355,16 +369,19 @@ fun NearbyPlacesSearch(viewModel: PlacesViewModel) {
     }
 }
 
+
 @Composable
 fun ParkingPlacesList(viewModel: ParkingViewModel) {
     // Collect the LiveData into a state that Compose can watch
     val parkingPlaces by viewModel.allParkingPlaces.observeAsState(initial = emptyList())
     Column(modifier = Modifier.fillMaxSize()) {
         Text(
-            text = "        Parking Places",
-            style = MaterialTheme.typography.h6,
+            text = "Explore our Parking Places",
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.h5,
+            color = Color.Blue,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 8.dp, start = 16.dp, end = 16.dp, top = 16.dp) // Add space below the heading and some horizontal padding
+            modifier = Modifier.padding(bottom = 8.dp, start = 8.dp, end = 8.dp, top = 8.dp) // Add space below the heading and some horizontal padding
         )
         LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(parkingPlaces) { parkingPlace ->
@@ -380,12 +397,12 @@ fun ParkingPlaceItem(parkingPlace: ParkingPlace) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp, horizontal = 16.dp) // Add padding around the item
+            .padding(vertical = 2.dp, horizontal = 8.dp) // Add padding around the item
     ) {
         // Elevated card to display parking place details
         ElevatedCard(
             shape = RoundedCornerShape(8.dp),
-            elevation = CardDefaults.cardElevation(4.dp),
+            elevation = CardDefaults.cardElevation(8.dp),
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable(onClick = { expanded = !expanded })  // Toggle expanded state
@@ -394,7 +411,7 @@ fun ParkingPlaceItem(parkingPlace: ParkingPlace) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(12.dp)  // Increase padding for better touch area
+                    .padding(8.dp)  // Increase padding for better touch area
             ) {
                 // Row with parking place name and address
                 Column(

@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -45,7 +46,7 @@ fun Book(navController: NavController) {
         ) {
             Box(
                 modifier = Modifier
-                    .weight(0.5f)
+                    .weight(1f)
                     .fillMaxWidth()
             ) {
                 BookingParkingList(parkingViewModel)
@@ -53,9 +54,16 @@ fun Book(navController: NavController) {
             Spacer(modifier = Modifier.height(8.dp))
             Box(
                 modifier = Modifier
-                    .weight(0.4f)
+                    .weight(0.2f)
                     .fillMaxWidth()
             ) {
+                Text(
+                    text = "Click on a parking place to book your spot now",
+                    style = MaterialTheme.typography.subtitle1,
+                    color = Color.Magenta,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 8.dp, start = 16.dp, end = 16.dp, top = 16.dp) // Add space below the heading and some horizontal padding
+                )
 
             }
         }

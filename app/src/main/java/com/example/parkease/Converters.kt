@@ -1,7 +1,6 @@
 package com.example.parkease
 
 import androidx.room.TypeConverter
-import java.text.SimpleDateFormat
 import java.util.*
 
 class Converters {
