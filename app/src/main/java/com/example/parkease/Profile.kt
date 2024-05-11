@@ -12,6 +12,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -105,6 +106,8 @@ fun PasswordChange(user: FirebaseUser?,context: android.content.Context,launcher
     var newPassword by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var passwordChangeResult by remember { mutableStateOf<String?>(null) }
+    Column {
+
     OutlinedTextField(
         value = currentPassword,
         onValueChange = { currentPassword = it },
@@ -120,29 +123,38 @@ fun PasswordChange(user: FirebaseUser?,context: android.content.Context,launcher
         onValueChange = { confirmPassword = it },
         label = { Text("Confirm New Password") }
     )
-    Button(onClick = { val intent = Intent(context, Profile::class.java)
-        launcher.launch(intent) }, ) {
-        Text(text = "Back")
+    Row {
 
-    }
-    Button(onClick = {
-        if (newPassword == confirmPassword) {
-            user?.updatePassword(newPassword)
-                ?.addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        passwordChangeResult = "Password Updated Successfully!"
-                    } else {
-                        passwordChangeResult = "Failed to Update Password."
-                    }
-                }
-        } else {
-            passwordChangeResult = "Passwords do not match."
+
+        Button(
+            onClick = {
+                val intent = Intent(context, Profile::class.java)
+                launcher.launch(intent)
+            },
+        ) {
+            Text(text = "Back")
+
         }
-    }) {
-        Text("Update Password")
+        Button(onClick = {
+            if (newPassword == confirmPassword) {
+                user?.updatePassword(newPassword)
+                    ?.addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            passwordChangeResult = "Password Updated Successfully!"
+                        } else {
+                            passwordChangeResult = "Failed to Update Password."
+                        }
+                    }
+            } else {
+                passwordChangeResult = "Passwords do not match."
+            }
+        }) {
+            Text("Update Password")
+        }
     }
     passwordChangeResult?.let {
         Text(it)
     }
+}
 }
 
