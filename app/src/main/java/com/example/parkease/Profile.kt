@@ -38,7 +38,15 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
-
+class Profile : AppCompatActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            Profile(navController = rememberNavController())
+        }
+    }
+}
 
 @Composable
 fun Profile(navController: NavController) {
@@ -68,7 +76,7 @@ fun Profile(navController: NavController) {
         user?.email?.let { email ->
             Text(text = "Email: $email",modifier = Modifier.padding(8.dp))
         }
-        Button(onClick = {  }
+        Button(onClick = {   }
             ,colors = ButtonDefaults.buttonColors(Color.Yellow),
             modifier = Modifier
                 .padding(horizontal = 8.dp, vertical = 8.dp))
@@ -76,7 +84,7 @@ fun Profile(navController: NavController) {
             Text(text ="Change Password", color = Color.Black)
 
         }
-        Button(onClick = {auth.signOut() &&
+        Button(onClick = {auth.signOut()
                 navigateToLogin(context, launcher)}
             ,colors = ButtonDefaults.buttonColors(Color.Yellow),
             modifier = Modifier
@@ -112,6 +120,11 @@ fun PasswordChange(user: FirebaseUser?,context: android.content.Context,launcher
         onValueChange = { confirmPassword = it },
         label = { Text("Confirm New Password") }
     )
+    Button(onClick = { val intent = Intent(context, Profile::class.java)
+        launcher.launch(intent) }, ) {
+        Text(text = "Back")
+
+    }
     Button(onClick = {
         if (newPassword == confirmPassword) {
             user?.updatePassword(newPassword)
