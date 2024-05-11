@@ -262,21 +262,20 @@ Column {
         Row {
 
 
-            Button(onClick = {navigateToLogin(context, launcher)}
-                ,colors = ButtonDefaults.buttonColors(Color.Yellow),
+            Button(onClick = {navigateToLogin(context, launcher)},
                 modifier = Modifier
                     .padding(horizontal = 8.dp, vertical = 8.dp))
             {
-                Text(text ="Back to Login", color = Color.Black)
+                Text(text ="Back to Login")
             }
             Button(
                 onClick = {registerUser(useremail, password, firebaseAuth, context, launcher)
-                    saveUserInfo(firstname,lastname,useremail,phoneNumber,useraddress,db)}, colors = ButtonDefaults.buttonColors(Color.Yellow),
+                    saveUserInfo(firstname,lastname,useremail,phoneNumber,useraddress,db)},
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp, vertical = 8.dp)
             ) {
-                Text(text = "Register", color = Color.Black)
+                Text(text = "Register")
             }
         }
 

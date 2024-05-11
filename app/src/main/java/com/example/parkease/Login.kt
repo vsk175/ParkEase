@@ -163,10 +163,9 @@ fun LoginElements(auth: FirebaseAuth, context: android.content.Context,launcher:
             Row{
                 Button(
                     onClick = { signInWithEmailAndPassword(auth, context, username, password, launcher) },
-                    colors = ButtonDefaults.buttonColors(Color.Yellow),
                     modifier = Modifier.padding(8.dp)
                 ) {
-                    Text("Login", color = Color.Black)
+                    Text("Login")
                 }
 
                 val context = LocalContext.current
@@ -208,12 +207,11 @@ fun LoginElements(auth: FirebaseAuth, context: android.content.Context,launcher:
             Button(
                 onClick = { navigateToRegister(context, launcher) },
                 shape = RoundedCornerShape(30),
-                colors = ButtonDefaults.buttonColors(Color.Yellow),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 30.dp)
             ) {
-                Text(text = "Register", color = Color.Black)
+                Text(text = "Register")
 
             }
         }

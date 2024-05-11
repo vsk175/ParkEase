@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
@@ -39,7 +40,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
 
-
 @Composable
 fun Profile(navController: NavController) {
     val launcher = rememberLauncherForActivityResult(
@@ -72,20 +72,18 @@ fun Profile(navController: NavController) {
             if (user != null) {
                 navigateToChangePassword(user, context, launcher)
             }
-        }
-            ,colors = ButtonDefaults.buttonColors(Color.Yellow),
+        },
             modifier = Modifier
                 .padding(horizontal = 8.dp, vertical = 8.dp))
         {
-            Text(text ="Change Password", color = Color.Black)
+            Text(text ="Change Password")
 
         }
-        Button(onClick = { navigateToLoginFromProfile(context, launcher)}
-            ,colors = ButtonDefaults.buttonColors(Color.Yellow),
+        Button(onClick = { navigateToLoginFromProfile(context, launcher)},
             modifier = Modifier
                 .padding(horizontal = 8.dp, vertical = 8.dp))
         {
-            Text(text ="Sign-Out", color = Color.Black)
+            Text(text ="Sign-Out")
 
         }
 
