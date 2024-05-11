@@ -12,7 +12,6 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -39,15 +38,7 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
-class Profile : AppCompatActivity() {
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            Profile(navController = rememberNavController())
-        }
-    }
-}
+
 
 @Composable
 fun Profile(navController: NavController) {
@@ -77,7 +68,11 @@ fun Profile(navController: NavController) {
         user?.email?.let { email ->
             Text(text = "Email: $email",modifier = Modifier.padding(8.dp))
         }
-        Button(onClick = {   }
+        Button(onClick = {
+            if (user != null) {
+                navigateToChangePassword(user, context, launcher)
+            }
+        }
             ,colors = ButtonDefaults.buttonColors(Color.Yellow),
             modifier = Modifier
                 .padding(horizontal = 8.dp, vertical = 8.dp))
@@ -85,8 +80,7 @@ fun Profile(navController: NavController) {
             Text(text ="Change Password", color = Color.Black)
 
         }
-        Button(onClick = {auth.signOut()
-                navigateToLogin(context, launcher)}
+        Button(onClick = { navigateToLoginFromProfile(context, launcher)}
             ,colors = ButtonDefaults.buttonColors(Color.Yellow),
             modifier = Modifier
                 .padding(horizontal = 8.dp, vertical = 8.dp))
@@ -99,62 +93,21 @@ fun Profile(navController: NavController) {
     }
 }
 
-
-@Composable
-fun PasswordChange(user: FirebaseUser?,context: android.content.Context,launcher: ActivityResultLauncher<Intent>){
-    var currentPassword by remember { mutableStateOf("") }
-    var newPassword by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
-    var passwordChangeResult by remember { mutableStateOf<String?>(null) }
-    Column {
-
-    OutlinedTextField(
-        value = currentPassword,
-        onValueChange = { currentPassword = it },
-        label = { Text("Current Password") }
-    )
-    OutlinedTextField(
-        value = newPassword,
-        onValueChange = { newPassword = it },
-        label = { Text("New Password") }
-    )
-    OutlinedTextField(
-        value = confirmPassword,
-        onValueChange = { confirmPassword = it },
-        label = { Text("Confirm New Password") }
-    )
-    Row {
-
-
-        Button(
-            onClick = {
-                val intent = Intent(context, Profile::class.java)
-                launcher.launch(intent)
-            },
-        ) {
-            Text(text = "Back")
-
-        }
-        Button(onClick = {
-            if (newPassword == confirmPassword) {
-                user?.updatePassword(newPassword)
-                    ?.addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            passwordChangeResult = "Password Updated Successfully!"
-                        } else {
-                            passwordChangeResult = "Failed to Update Password."
-                        }
-                    }
-            } else {
-                passwordChangeResult = "Passwords do not match."
-            }
-        }) {
-            Text("Update Password")
-        }
-    }
-    passwordChangeResult?.let {
-        Text(it)
-    }
+fun navigateToLoginFromProfile(context: android.content.Context, launcher: ActivityResultLauncher<Intent>)
+{
+    val auth = FirebaseAuth.getInstance()
+    auth.signOut()
+    val intent = Intent(context, Login::class.java)
+    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+    launcher.launch(intent)
 }
+
+fun navigateToChangePassword(user: FirebaseUser, context: android.content.Context, launcher: ActivityResultLauncher<Intent>){
+    val intent = Intent(context, ChangePassword::class.java)
+    intent.putExtra("User", user)
+    launcher.launch(intent)
 }
+
+
+
 

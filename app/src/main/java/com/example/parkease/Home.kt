@@ -144,10 +144,6 @@ fun MapCardView(context: Context, fusedLocationProviderClient: FusedLocationProv
             fusedLocationProviderClient = fusedLocationProviderClient,
             onGetCurrentLocationSuccess = { location ->
                 currentLocation.value = LatLng(location.first, location.second)
-                Log.e(
-                    "MapCardView",
-                    "Location received - Latitude: ${location.first}, Longitude: ${location.second}"
-                )
             },
             onGetCurrentLocationFailed = { exception ->
                 Log.e("MapCardView", "Error getting location: $exception")
@@ -178,7 +174,7 @@ fun MapCardView(context: Context, fusedLocationProviderClient: FusedLocationProv
             currentLocation.value?.let { location ->
                 AdvancedMarker(
                     state = MarkerState(position = location),
-                    title = "Marker at Current Location"
+                    title = "Your Location"
                 )
             }
         }
@@ -186,7 +182,7 @@ fun MapCardView(context: Context, fusedLocationProviderClient: FusedLocationProv
 }
 
 @SuppressLint("MissingPermission")
-private fun getCurrentLocation(
+fun getCurrentLocation(
     context: Context,
     fusedLocationProviderClient: FusedLocationProviderClient,
     onGetCurrentLocationSuccess: (Pair<Double, Double>) -> Unit,
@@ -214,7 +210,7 @@ private fun getCurrentLocation(
     }
 }
 
-private fun areLocationPermissionsGranted(context: Context): Boolean {
+fun areLocationPermissionsGranted(context: Context): Boolean {
     return (ActivityCompat.checkSelfPermission(
         context, Manifest.permission.ACCESS_FINE_LOCATION
     ) == PackageManager.PERMISSION_GRANTED &&
