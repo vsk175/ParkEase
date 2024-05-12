@@ -18,7 +18,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Face
@@ -60,6 +62,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import org.checkerframework.common.value.qual.EnsuresMinLenIf
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -101,7 +104,7 @@ fun Registration(){
     val context = LocalContext.current
     val firebaseAuth = FirebaseAuth.getInstance()
     val db = FirebaseFirestore.getInstance()
-
+    val scrollState = rememberScrollState()
     var showPassword by remember { mutableStateOf(false) }
 
 Column {
@@ -109,7 +112,7 @@ Column {
 
     Column(modifier = Modifier
         .fillMaxWidth()
-        .padding(8.dp), horizontalAlignment = Alignment.Start, verticalArrangement = Arrangement.SpaceEvenly) {
+        .padding(8.dp).verticalScroll(scrollState), horizontalAlignment = Alignment.Start, verticalArrangement = Arrangement.SpaceEvenly) {
         Text("Registration", fontSize = 25.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
         OutlinedTextField(
             value = firstname, onValueChange = {if(it.length <= 50 &&  it.matches(pattern)) firstname = it },
@@ -189,6 +192,11 @@ Column {
                 }
             }
                 )
+        Text("* Password must be Greater than 7 characters and must contain")
+        Text("• A UpperCase character")
+        Text("• A LowerCase character")
+        Text("• A Number")
+        Text("• A Special character")
         ExposedDropdownMenuBox(
             expanded = isExpanded,
             onExpandedChange = { isExpanded = it },
@@ -315,8 +323,14 @@ fun registerUser(email: String, password: String, auth: FirebaseAuth, context: C
                     Toast.makeText(context, "Registration failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
                 }
             }
-    } else {
-        Toast.makeText(context, "Email and password cannot be empty", Toast.LENGTH_SHORT).show()
+    } else if (email.isEmpty()) {
+        Toast.makeText(context, "Email cannot be empty", Toast.LENGTH_SHORT).show()
+    }
+    else if (password.isEmpty()) {
+        Toast.makeText(context, "Password cannot be empty", Toast.LENGTH_SHORT).show()
+    }
+    else {
+        Toast.makeText(context, "Email and Password cannot be empty", Toast.LENGTH_SHORT).show()
     }
 }
 

@@ -270,9 +270,16 @@ private fun signInWithEmailAndPassword(
 
 
     }
-    else {
-        Toast.makeText(context, "Authentication failed", Toast.LENGTH_SHORT).show()
+    else if(email.isEmpty()) {
+        Toast.makeText(context, "Email cannot be empty", Toast.LENGTH_SHORT).show()
         navigateToLogin(context, launcher)
+    }
+    else if(password.isEmpty()){
+        Toast.makeText(context, "Password cannot be empty", Toast.LENGTH_SHORT).show()
+        navigateToLogin(context, launcher)
+    }
+    else {
+        Toast.makeText(context, "Email and Password cannot be empty", Toast.LENGTH_SHORT).show()
     }
 
 }
