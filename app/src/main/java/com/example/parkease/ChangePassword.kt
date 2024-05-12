@@ -24,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -102,10 +103,12 @@ fun PasswordChange(user: FirebaseUser, activity: Activity) {
             }) {
                 Text("Update Password")
             }
-            passwordChangeResult?.let {
-                Text(it)
-            }
-
+        }
+        passwordChangeResult?.let {
+            Text(
+                text = passwordChangeResult ?: "",
+                color = Color.Blue,
+            )
         }
     }
 }

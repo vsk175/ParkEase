@@ -318,7 +318,7 @@ fun navigateToLogin(context: android.content.Context, launcher: ActivityResultLa
 }
 
 
-private fun saveUserInfo(firstname:String, lastname:String,email:String,phonenumber:String,address:String, db: FirebaseFirestore) {
+private fun saveUserInfo(firstname:String, lastname:String, email:String, phonenumber:String,address:String, db: FirebaseFirestore) {
     val user = RegInfo(firstname, lastname, email, phonenumber, address)
     db.collection("users")
         .add(user)
