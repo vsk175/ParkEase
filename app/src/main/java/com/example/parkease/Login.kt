@@ -106,6 +106,7 @@ fun LoginElements(auth: FirebaseAuth, context: android.content.Context,launcher:
     var password by remember { mutableStateOf("") }
     var passwordErrors by remember { mutableStateOf(listOf<String>()) }
     var showPassword by remember { mutableStateOf(false) }
+    var emailErrors by remember { mutableStateOf(listOf<String>()) }
     Column {
         AppBar()
         Column(
@@ -120,7 +121,8 @@ fun LoginElements(auth: FirebaseAuth, context: android.content.Context,launcher:
                 modifier = Modifier.padding(top = 8.dp)
             )
             OutlinedTextField(
-                value = username, onValueChange = { username = it },
+                value = username, onValueChange = { username = it
+                        emailErrors = validateEmail(username)},
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Outlined.Email,
@@ -140,6 +142,10 @@ fun LoginElements(auth: FirebaseAuth, context: android.content.Context,launcher:
                 ),
 
                 )
+            emailErrors.forEach { error ->
+                Text(text = error,color = Color.Red,
+                    modifier = Modifier.padding(start = 16.dp))
+            }
             OutlinedTextField(
                 value = password, onValueChange = {  password = it
                     passwordErrors = validatePassword(password)},
@@ -160,9 +166,18 @@ fun LoginElements(auth: FirebaseAuth, context: android.content.Context,launcher:
                     }
                 }
             )
+            passwordErrors.forEach { error ->
+                Text(
+                    text = error,
+                    color = Color.Red,
+                    modifier = Modifier.padding(start = 16.dp) // Adjust padding as needed
+                )
+            }
             Row{
                 Button(
-                    onClick = { signInWithEmailAndPassword(auth, context, username, password, launcher) },
+                    onClick = { if (emailErrors.isEmpty() && passwordErrors.isEmpty()){
+                        signInWithEmailAndPassword(auth, context, username, password, launcher)}
+                              else{ Toast.makeText(context, "Check email or password", Toast.LENGTH_SHORT).show()}},
                     modifier = Modifier.padding(8.dp)
                 ) {
                     Text("Login")

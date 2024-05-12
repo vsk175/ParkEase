@@ -93,6 +93,7 @@ fun Registration(){
     var firstname by remember { mutableStateOf("")}
     var lastname by remember { mutableStateOf("")}
     var useremail by remember { mutableStateOf("")}
+    var emailErrors by remember { mutableStateOf(listOf<String>()) }
     val pattern = remember { Regex("[a-zA-Z\\s]*") }
     var phoneNumber by remember { mutableStateOf("")}
     var useraddress by remember { mutableStateOf("") }
@@ -132,13 +133,15 @@ Column {
                 .padding(horizontal = 8.dp),
             singleLine = true,
         )
-        OutlinedTextField(value = useremail, onValueChange = {useremail = it},
+        OutlinedTextField(value = useremail, onValueChange = {useremail = it
+                                                             emailErrors = validateEmail(useremail)
+        },
             leadingIcon = { Icon(imageVector = Icons.Outlined.Email, contentDescription = null)},
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp),
             label = { Text("Email") },
-            isError = !android.util.Patterns.EMAIL_ADDRESS.matcher(useremail).matches() && useremail.isNotEmpty(),
+            isError = !android.util.Patterns.EMAIL_ADDRESS.matcher(useremail).matches() && useremail.isEmpty(),
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
@@ -146,6 +149,11 @@ Column {
             ),
 
         )
+        emailErrors.forEach { error ->
+           Text(text = error,color = Color.Red,
+               modifier = Modifier.padding(start = 16.dp))
+        }
+
 
         OutlinedTextField(
             value = phoneNumber,
@@ -173,7 +181,7 @@ Column {
             singleLine = true
             )
         OutlinedTextField(
-            value = password, onValueChange = {  password = it
+            value = password, onValueChange = { password = it
                 passwordErrors = validatePassword(password)},
             modifier = Modifier
                 .fillMaxWidth()
@@ -192,6 +200,14 @@ Column {
                 }
             }
                 )
+        passwordErrors.forEach { error ->
+            Text(
+                text = error,
+                color = Color.Red,
+                modifier = Modifier.padding(start = 16.dp) // Adjust padding as needed
+            )
+        }
+
         Text("* Password must be Greater than 7 characters and must contain")
         Text("• A UpperCase character")
         Text("• A LowerCase character")
@@ -277,8 +293,11 @@ Column {
                 Text(text ="Back to Login")
             }
             Button(
-                onClick = {registerUser(useremail, password, firebaseAuth, context, launcher)
-                    saveUserInfo(firstname,lastname,useremail,phoneNumber,useraddress,db)},
+                onClick = { if (emailErrors.isEmpty() && passwordErrors.isEmpty()){ registerUser(useremail, password, firebaseAuth, context, launcher)
+                    saveUserInfo(firstname,lastname,useremail,phoneNumber,useraddress,db)}
+                          else{
+                    Toast.makeText(context, "Check Email and password", Toast.LENGTH_SHORT).show()
+                          }},
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp, vertical = 8.dp)
@@ -362,7 +381,9 @@ fun CustomDatePickerDialog(
 
 fun validatePassword(password: String): List<String> {
     val errors = mutableListOf<String>()
-
+    if (password.isEmpty()){
+        errors.add("Password must not be empty")
+    }
     if (password.length < 8) {
         errors.add("Password must be at least 8 characters long.")
     }
@@ -378,7 +399,21 @@ fun validatePassword(password: String): List<String> {
     if (!password.any { it in "!@#$%^&*()-+=" }) {
         errors.add("Password must contain at least one special character (!@#$%^&*()-+=).")
     }
+    if (password.any {it in " "}){
+        errors.add("Password should not have any whitespaces")
 
+    }
+    return errors
+}
+
+fun validateEmail(email: String): List<String> {
+    val errors = mutableListOf<String>()
+    if (email.isEmpty()){
+        errors.add("Email should not be empty")
+    }
+    if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+        errors.add("Not a valid email address")
+    }
     return errors
 }
 
