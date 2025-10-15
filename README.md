@@ -2,8 +2,8 @@ ParkEase – Parking Management App
 
 An Android app for seamless parking management, built with Jetpack Compose, Firebase, and Google Maps API.
 
-Overview:
-ParkEase is a parking management solution designed to simplify finding and booking parking spots. Users can register, login, view available parking spaces in real-time on Google Maps, and make bookings with offline support. The app leverages Room Database, LiveData, and StateFlow to ensure real-time updates and a smooth user experience.
+Overview: 
+This project is a smart parking management Android application built as part of a university unit assignment. Users can register and log in through Firebase Authentication, view nearby parking spots on Google Maps in real-time, and make bookings. Bookings are stored locally using Room Database for offline support and synced with Firebase for persistence. The app leverages Jetpack Compose, LiveData, and StateFlow to provide a responsive and seamless user experience while ensuring data reliability and performance.
 
 Features:
 1. User authentication (registration & login) with Firebase
